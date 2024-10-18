@@ -94,18 +94,6 @@ fi
 # Handle consecutive failures
 FAILURE_COUNT=$(cat $FAILURE_COUNT_FILE)
 
-# Check if cooldown period is in effect
-#if [ -f "$COOLDOWN_FILE" ]; then
-#    last_cycle=$(cat "$COOLDOWN_FILE")
-#    current_time=$(date +%s)
-#    time_diff=$((current_time - last_cycle))
-
-#    if [[ $time_diff -lt $COOLDOWN_PERIOD ]]; then
-#        echo "Cooldown period is still active, skipping power cycle." >> $LOG_FILE
-#        exit 0
-#    fi
-#fi
-
 if [[ $SUCCESS_PERCENTAGE -eq 0 ]]; then
     # Increase failure count
     FAILURE_COUNT=$((FAILURE_COUNT + 1))
@@ -116,10 +104,10 @@ if [[ $SUCCESS_PERCENTAGE -eq 0 ]]; then
         echo "Internet down for 5+ minutes. Power cycling modem..." >> $LOG_FILE
 
         # Activate the virtual environment
-        source /home/dorothy/venv/bin/activate
+        source venv/bin/activate
 
         # Run the power cycle script within the virtual environment
-        /home/dorothy/venv/bin/python3 /home/dorothy/scripts/power_cycle_nbn.py >> $LOG_FILE 2>&1  # power cycle nbn
+        venv/bin/python3 scripts/power_cycle_nbn.py >> $LOG_FILE 2>&1  # power cycle nbn
 
         # Log the power cycle action with error handling
         #sqlite3 $DB_FILE "INSERT INTO internet_status (timestamp, status) VALUES ('$now', 'Modem power cycled due to network failure');" 2>> $LOG_FILE
