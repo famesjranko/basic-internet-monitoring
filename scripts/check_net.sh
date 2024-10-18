@@ -2,18 +2,18 @@
 
 # Targets array
 TARGETS=("8.8.8.8" "1.1.1.1" "9.9.9.9")
-DB_FILE="logs/internet_status.db"
-FAILURE_COUNT_FILE="logs/failure_count.txt"
-LOG_FILE="logs/check_internet.log"
-#COOLDOWN_FILE="/home/dorothy/logs/cooldown.txt"
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+DB_FILE="$SCRIPT_DIR/logs/internet_status.db"
+FAILURE_COUNT_FILE="$SCRIPT_DIR/logs/failure_count.txt"
+LOG_FILE="$SCRIPT_DIR/logs/check_internet.log"
+
 now=$(date '+%Y-%m-%d %H:%M:%S')
+
 SUCCESS_COUNT=0
 LATENCIES=()
 PING_COUNT_PER_TARGET=33
 TOTAL_COUNT=$(( ${#TARGETS[@]} * PING_COUNT_PER_TARGET ))
-
-# Cooldown period (10 minutes)
-#COOLDOWN_PERIOD=600  # in seconds (600 seconds = 10 minutes)
 
 # Initialize failure count file if it doesn't exist
 if [ ! -f $FAILURE_COUNT_FILE ]; then
