@@ -107,7 +107,7 @@ if [[ $SUCCESS_PERCENTAGE -eq 0 ]]; then
         source venv/bin/activate
 
         # Run the power cycle script within the virtual environment
-        venv/bin/python3 scripts/power_cycle_nbn.py >> $LOG_FILE 2>&1  # power cycle nbn
+        venv/bin/python3 scripts/power_cycle_p100.py >> $LOG_FILE 2>&1  # power cycle nbn
 
         # Log the power cycle action with error handling
         #sqlite3 $DB_FILE "INSERT INTO internet_status (timestamp, status) VALUES ('$now', 'Modem power cycled due to network failure');" 2>> $LOG_FILE
