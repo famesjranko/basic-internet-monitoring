@@ -2,11 +2,16 @@ import asyncio
 import tapo
 import json  # Importing json for pretty printing the output
 import logging
+import os
 from datetime import datetime
 
+# Get the directory where the script is located
+SCRIPT_DIR = os.path.dirname(os.path.realpath(__file__))
+
 # Set up logging configuration
+LOG_FILE = os.path.join(SCRIPT_DIR, 'logs', 'p100-smart-plug-logfile.log')
 logging.basicConfig(
-    filename="logs/p100-smart-plug-logfile.log",  # Update to the correct path where you want the log file to be saved
+    filename=LOG_FILE,
     level=logging.INFO,
     format="%(asctime)s - %(levelname)s - %(message)s"
 )
@@ -18,7 +23,7 @@ device_ip = "<device ip>"
 device_name = "<device name>"
 
 # Cooldown settings
-COOLDOWN_FILE = "logs/cooldown.txt"
+COOLDOWN_FILE = os.path.join(SCRIPT_DIR, 'logs', 'cooldown.txt')
 COOLDOWN_PERIOD = 600  # 10 minutes cooldown in seconds (600 seconds = 10 minutes)
 
 # The time to wait between turning off and on the device (in seconds)
