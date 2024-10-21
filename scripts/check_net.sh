@@ -4,7 +4,10 @@
 TARGETS=("8.8.8.8" "1.1.1.1" "9.9.9.9")
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
 DB_FILE="$SCRIPT_DIR/logs/internet_status.db"
+RETENTION_DAYS=14 # Set db retention period in days (default is 14 days, can be preset as a positive number)
+
 FAILURE_COUNT_FILE="$SCRIPT_DIR/logs/failure_count.txt"
 LOG_FILE="$SCRIPT_DIR/logs/check_internet.log"
 
@@ -89,6 +92,17 @@ if [[ $? -eq 0 ]]; then
     echo "Log successfully inserted into db" >> $LOG_FILE
 else
     echo "Failed to insert log into db" >> $LOG_FILE
+fi
+
+# Clean up old data (keep only last RETENTION_DAYS days worth of data)
+sqlite3 $DB_FILE "DELETE FROM internet_status WHERE timestamp < datetime('now', '-$RETENTION_DAYS days');" 2>> $LOG_FILE
+
+if [[ $? -eq 0 ]]; then
+    echo "Old data successfully cleaned up (kept last $RETENTION_DAYS days)" >> $LOG_FILE
+    echo "Old data successfully cleaned up (kept last $RETENTION_DAYS days)"
+else
+    echo "Failed to clean up old data" >> $LOG_FILE
+    echo "Failed to clean up old data"
 fi
 
 # Handle consecutive failures
