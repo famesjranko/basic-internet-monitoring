@@ -33,7 +33,6 @@ internet-monitoring/
 │   ├── failure_count.txt                # Tracks the number of consecutive internet failures
 │   └── cooldown.txt                     # Tracks the cooldown period after power cycling
 │
-├── venv/                                # Virtual environment for Python packages
 └── README.md                            # Setup instructions
 ```
 
@@ -103,7 +102,98 @@ This script communicates with a TP-Link Tapo smart plug to power cycle the modem
 
 ---
 
-## 3. Dash Web App Setup
+## 3. Systemd Setup
+
+To automate the running of the internet check script and the Dash app, you can set up systemd services and timers.
+
+### a. Internet Check Script Service
+
+You can use `systemd` to run the internet check script every minute.
+
+1. **Create a Timer**: Save the following as `/etc/systemd/system/check_internet.timer`
+
+   ```ini
+   [Unit]
+   Description=Runs Check Internet Connectivity Every Minute
+
+   [Timer]
+   # Run every minute
+   OnCalendar=*:0/1
+   AccuracySec=1s
+   Persistent=true
+
+   [Install]
+   WantedBy=timers.target
+   ```
+
+2. **Create the Service**: Save the following as `/etc/systemd/system/check_internet.service`
+
+   ```ini
+   [Unit]
+   Description=Check Internet Connectivity
+
+   [Service]
+   Type=oneshot
+   ExecStart=/bin/bash /home/<your-username>/scripts/check_net.sh
+   StandardOutput=append:/home/<your-username>/logs/check_internet-script.log
+   StandardError=append:/home/<your-username>/logs/check_internet-script_error.log
+   ```
+
+3. **Enable the Timer**:
+
+   ```bash
+   sudo systemctl daemon-reload
+   sudo systemctl enable --now check_internet.timer
+   ```
+
+### b. Dash Web App Service
+
+You can also set up the Dash app to run automatically on system startup.
+
+1. **Create the Service**: Save the following as `/etc/systemd/system/dash_app.service`
+
+   ```ini
+   [Unit]
+   Description=Dash App for Internet Status Monitoring
+   After=network.target redis-server.service
+
+   [Service]
+   User=<your-username>
+   WorkingDirectory=/home/<your-username>/scripts
+   ExecStart=/home/<your-username>/venv/bin/python3 /home/<your-username>/scripts/internet_status_dashboard_sqlite_new_redis.py
+   Restart=always
+   RestartSec=10
+   Environment=PYTHONUNBUFFERED=1
+
+   [Install]
+   WantedBy=multi-user.target
+   ```
+
+2. **Enable the Dash App Service**:
+
+   ```bash
+   sudo systemctl daemon-reload
+   sudo systemctl enable dash_app.service
+   sudo systemctl start dash_app.service
+   ```
+
+### Checking the Services
+
+- To check if the internet check service is running properly:
+
+   ```bash
+   sudo systemctl status check_internet.service
+   ```
+
+- To check if the Dash app service is running:
+
+   ```bash
+   sudo systemctl status dash_app.service
+   ```
+
+---
+
+## 4. Dash Web App Setup
 
 The **Dash app** provides a web interface to monitor network connectivity and manually trigger power cycling.
 
@@ -114,75 +204,6 @@ The **Dash app** provides a web interface to monitor network connectivity and ma
    ```
 
 2. **Access the App**: Navigate to `http://<your-server-ip>:8050` in a browser to access the dashboard.
-
----
-
-## 4. Systemd Services
-
-### a. Internet Check Script Service
-
-Create a systemd service to run the internet check script at regular intervals:
-
-1. **Create a Timer**: `/etc/systemd/system/internet-check.timer`
-
-   ```ini
-   [Unit]
-   Description=Run internet check every minute
-
-   [Timer]
-   OnBootSec=1min
-   OnUnitActiveSec=1min
-   Unit=internet-check.service
-
-   [Install]
-   WantedBy=timers.target
-   ```
-
-2. **Create the Service**: `/etc/systemd/system/internet-check.service`
-
-   ```ini
-   [Unit]
-   Description=Internet Check Service
-
-   [Service]
-   ExecStart=/bin/bash /path-to-repo/scripts/check_net.sh
-   ```
-
-3. **Enable the Timer**:
-
-   ```bash
-   sudo systemctl daemon-reload
-   sudo systemctl enable --now internet-check.timer
-   ```
-
-### b. Dash Web App Service
-
-You can set up the Dash app as a service so it starts automatically.
-
-1. **Create the Service**: `/etc/systemd/system/dash-app.service`
-
-   ```ini
-   [Unit]
-   Description=Dash Network Monitoring App
-   After=network.target
-
-   [Service]
-   User=<your-username>
-   WorkingDirectory=/path-to-repo/dash_app
-   ExecStart=/path-to-repo/venv/bin/python3 /path-to-repo/dash_app/app.py
-   Restart=always
-
-   [Install]
-   WantedBy=multi-user.target
-   ```
-
-2. **Enable the Dash App**:
-
-   ```bash
-   sudo systemctl daemon-reload
-   sudo systemctl enable dash-app.service
-   sudo systemctl start dash-app.service
-   ```
 
 ---
 
@@ -207,15 +228,3 @@ You can set up the Dash app as a service so it starts automatically.
 
 - **Logs**: All logs are stored in the `logs/` directory, and can be useful for debugging.
 - **Database**: The SQLite database (`internet_status.db`) stores all the ping data for the dashboard and logs.
-
----
-
-## Future Enhancements
-
-- Add more detailed metrics to the dashboard (e.g., real-time alerts).
-- Support for additional smart plug brands or other power cycle devices.
-- Incorporate email or SMS alerts for downtime notifications.
-
----
-
-This setup should give you a complete monitoring and automation system for handling internet connectivity issues. Let me know if you need any additional details!
