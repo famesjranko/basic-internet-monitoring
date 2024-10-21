@@ -18,9 +18,9 @@ This project monitors internet connectivity by pinging multiple targets, logs th
 internet-monitoring/
 │
 ├── scripts/
-│   ├── check_net.sh                    # Script that checks the internet and triggers the power cycle
+│   ├── check_net.sh                     # Script that checks the internet and triggers the power cycle
 │   ├── power_cycle_p100.py              # Python script for power cycling the modem via Tapo smart plug
-│   ├── requirements.txt                 # Python dependencies for the power cycle script
+│   ├── requirements.txt                 # Python dependencies for the power cycle script (pytapo)
 │
 ├── dash_app/
 │   ├── app.py                           # Dash web app to visualize network logs
