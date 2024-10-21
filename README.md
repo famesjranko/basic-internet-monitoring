@@ -10,6 +10,10 @@ This project monitors internet connectivity by pinging multiple targets, logs th
 - **Redis Caching**: Used in the Dash app for performance optimization.
 - **Cooldown Logic**: Ensures the power cycle isn’t retriggered within a specified cooldown period (10 minutes).
 
+## Dash Web App Interface
+
+![Dash Web App Screenshot](screenshots/dash.png)
+
 ---
 
 ## Project Structure
