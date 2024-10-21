@@ -1,4 +1,4 @@
-# Basic Internet Monitoring and Modem Power Cycle System
+# Basic Internet Monitoring and Modem Power Cycle System (Tapo P100)
 
 This project monitors internet connectivity by pinging multiple targets, logs the status in an SQLite database, and automatically triggers a modem power cycle if consecutive failures are detected. It also provides a dashboard to visualize the network status over time using a Dash web app.
 
@@ -67,18 +67,79 @@ cd internet-monitoring
 
 #### b. Redis Setup
 
-1. **Install Redis** on your system (if not already installed):
+##### i. Install and Start Redis
+
+1. **Install Redis** on your system:
 
    ```bash
+   sudo apt-get update
    sudo apt-get install redis-server
    ```
 
-2. **Start Redis**:
+2. **Start Redis** and enable it to run at startup:
 
    ```bash
    sudo systemctl start redis-server
    sudo systemctl enable redis-server
    ```
+
+##### ii. Configure Redis
+
+1. **Set the Redis port** (if using a port other than the default `6379`):
+
+   - Open the Redis configuration file:
+   
+     ```bash
+     sudo nano /etc/redis/redis.conf
+     ```
+
+   - Find the `port` setting and modify it if necessary:
+
+     ```bash
+     port 6379  # Change this if needed
+     ```
+
+   - Save the file and restart Redis:
+
+     ```bash
+     sudo systemctl restart redis-server
+     ```
+
+2. **Limit Redis memory usage** (optional):
+
+   - Open the configuration file:
+
+     ```bash
+     sudo nano /etc/redis/redis.conf
+     ```
+
+   - Set the maximum memory Redis can use (e.g., 100MB):
+
+     ```bash
+     maxmemory 100mb
+     ```
+
+   - Choose an eviction policy to remove the least recently used keys when Redis reaches the memory limit:
+
+     ```bash
+     maxmemory-policy allkeys-lru
+     ```
+
+   - Save the file and restart Redis:
+
+     ```bash
+     sudo systemctl restart redis-server
+     ```
+
+##### iii. Verify Redis is Running
+
+Check that Redis is running correctly by using the following command:
+
+```bash
+redis-cli ping
+```
+
+You should see the response `PONG` if Redis is running.
 
 ---
 
@@ -86,7 +147,7 @@ cd internet-monitoring
 
 ### a. Bash Script (`check_net.sh`)
 
-This script pings predefined targets (e.g., `8.8.8.8`) and logs internet status in the SQLite database (`internet_status.db`). If internet is down for 5 consecutive checks, it triggers the power cycle of the modem via the Python script.
+This script pings predefined targets (e.g., `8.8.8.8`) and logs internet status in the SQLite database (`internet_status.db`). If the internet is down for 5 consecutive checks, it triggers the power cycle of the modem via the Python script.
 
 1. **Edit Target IPs**: You can edit the target IPs in the `TARGETS` array in `check_net.sh` if needed.
 
@@ -94,7 +155,16 @@ This script pings predefined targets (e.g., `8.8.8.8`) and logs internet status 
 
 ### b. Python Power Cycle Script (`power_cycle_p100.py`)
 
-This script communicates with a TP-Link Tapo smart plug to power cycle the modem. 
+
+A good place to add the reference link to the Tapo P100 page would be in the section where you first mention the Tapo P100 smart plug. This helps provide context and a direct resource for users who may not be familiar with the device.
+
+Here’s a suggestion on where and how to add the link in your README:
+
+---
+
+### b. Python Power Cycle Script (`power_cycle_p100.py`)
+
+This script communicates with a TP-Link Tapo smart plug to power cycle the modem. You can find more information about the Tapo P100 smart plug [here](https://www.tapo.com/au/product/smart-plug/tapo-p100/).
 
 1. **Tapo Credentials**: Update the `email`, `password`, and `device_ip` in the script with your Tapo credentials and device IP address.
    
@@ -219,7 +289,9 @@ The **Dash app** provides a web interface to monitor network connectivity and ma
    - A cooldown period of 10 minutes ensures that consecutive power cycles do not happen too soon.
 
 3. **The Dashboard**:
-   - The Dash web app provides a graphical view of the network history. It shows metrics like success rates, latency, and packet loss.
+   - The Dash web app provides a graphical view of the network history.
+
+ It shows metrics like success rates, latency, and packet loss.
    - You can manually trigger a power cycle from the dashboard by clicking the **Power Cycle NBN Plug** button.
 
 ---
@@ -228,3 +300,7 @@ The **Dash app** provides a web interface to monitor network connectivity and ma
 
 - **Logs**: All logs are stored in the `logs/` directory, and can be useful for debugging.
 - **Database**: The SQLite database (`internet_status.db`) stores all the ping data for the dashboard and logs.
+
+---
+
+This version of the README is now properly organized, with the Redis setup simplified and well-formatted, and all sections are clear and easy to follow. Let me know if you'd like any additional changes!
