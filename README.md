@@ -159,15 +159,6 @@ This script pings predefined targets (e.g., `8.8.8.8`) and logs internet status 
 
 ### b. Python Power Cycle Script (`power_cycle_p100.py`)
 
-
-A good place to add the reference link to the Tapo P100 page would be in the section where you first mention the Tapo P100 smart plug. This helps provide context and a direct resource for users who may not be familiar with the device.
-
-Here’s a suggestion on where and how to add the link in your README:
-
----
-
-### b. Python Power Cycle Script (`power_cycle_p100.py`)
-
 This script communicates with a TP-Link Tapo smart plug to power cycle the modem. You can find more information about the Tapo P100 smart plug [here](https://www.tapo.com/au/product/smart-plug/tapo-p100/).
 
 1. **Tapo Credentials**: Update the `email`, `password`, and `device_ip` in the script with your Tapo credentials and device IP address.
@@ -304,7 +295,3 @@ The **Dash app** provides a web interface to monitor network connectivity and ma
 
 - **Logs**: All logs are stored in the `logs/` directory, and can be useful for debugging.
 - **Database**: The SQLite database (`internet_status.db`) stores all the ping data for the dashboard and logs.
-
----
-
-This version of the README is now properly organized, with the Redis setup simplified and well-formatted, and all sections are clear and easy to follow. Let me know if you'd like any additional changes!
