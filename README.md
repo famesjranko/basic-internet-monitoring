@@ -1,6 +1,6 @@
 # Basic Internet Monitoring and Modem Power Cycle System (Tapo P100)
 
-This project monitors internet connectivity by pinging multiple targets, logs the status in an SQLite database, and automatically triggers a modem power cycle if consecutive failures are detected. It also provides a dashboard to visualize the network status over time using a Dash web app.
+This project monitors internet connectivity by pinging multiple targets, logs the status in an SQLite database, and automatically triggers a modem power cycle via Tapo P100 Smart Plug if consecutive failures are detected. It also provides a dashboard to visualize the network status over time using a Dash web app.
 
 ## Features
 
